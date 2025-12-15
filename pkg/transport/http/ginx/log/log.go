@@ -6,9 +6,10 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/muxi-Infra/muxi-micro/pkg/logger"
-	"time"
 )
 
 const (
@@ -78,12 +79,14 @@ func GlobalLoggerMiddleware(l logger.Logger) gin.HandlerFunc {
 			"logID": logID, // 保证ctx中的所有日志都是自带logID的
 		})
 		SetLogger(ctx, l)
+		ctx.Next()
 	}
 }
 
 func GlobalNameMiddleware(name string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Set(NameKey, name)
+		ctx.Next()
 	}
 }
 
