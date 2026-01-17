@@ -7,10 +7,10 @@ import (
 )
 
 // 和proto一起生成的客户端模板的大致形式
-func HelloClient() (pb.HelloServiceClient, error) {
+func HelloClient() (pb.HelloServiceClient, func(), error) {
 	center, err := etcd.NewEtcdDiscovery()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	client, err := grpc.NewGRPCClient(
@@ -18,10 +18,9 @@ func HelloClient() (pb.HelloServiceClient, error) {
 		grpc.WithDiscoveryName("test"),
 	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	defer client.Close()
 
 	c := pb.NewHelloServiceClient(client.Conn())
-	return c, nil
+	return c, func() { _ = client.Close() }, nil
 }
